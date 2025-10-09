@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Servicios Eléctricos{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Servicios Eléctricos UDI</h1>
+        <nav>
+            <a href="{% url 'index' %}">Inicio</a>
+            <a href="{% url 'nosotros' %}">Nosotros</a>
+            <a href="{% url 'servicios' %}">Servicios</a>
+            <a href="{% url 'contacto' %}">Contacto</a>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2025 Servicios Eléctricos UDI</p>
+    </footer>
+</body>
+</html>
