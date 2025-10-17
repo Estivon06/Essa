@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Login · ServiTracker{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+  <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%;">
+    <div class="text-center mb-4">
+      <img src="{% static 'img/ESSA-Logo.png' %}" alt="Logo ServiTracker" width="80" class="mb-2">
+      <h3 class="fw-bold" style="color: var(--blue-dark);">Iniciar sesión</h3>
+      <p class="text-muted">Accede a tu cuenta para gestionar tus PQR</p>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="id_username" class="form-label">Usuario</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+          <input type="text" name="username" class="form-control" id="id_username" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="id_password" class="form-label">Contraseña</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+          <input type="password" name="password" class="form-control" id="id_password" required>
+        </div>
+      </div>
+
+      {% if form.errors %}
+        <div class="alert alert-danger py-2">
+          <small>Usuario o contraseña incorrectos. Inténtalo de nuevo.</small>
+        </div>
+      {% endif %}
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

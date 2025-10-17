@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Técnico{% endblock %}
+{% block content %}
+<h2 class="mb-3">PQR Asignadas</h2>
+
+<table class="table table-hover table-bordered">
+  <thead class="table-info">
+    <tr>
+      <th>ID</th>
+      <th>Ciudadano</th>
+      <th>Tipo de Falla</th>
+      <th>Estado</th>
+      <th>Fecha</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for q in quejas %}
+    <tr>
+      <td>{{ q.id }}</td>
+      <td>{{ q.ciudadano.usuario.username }}</td>
+      <td>{{ q.tipo_falla.nombre }}</td>
+      <td>{{ q.estado.nombre }}</td>
+      <td>{{ q.fecha_reporte|date:"d/m/Y H:i" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No tienes PQR asignadas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Reportes Administrativos{% endblock %}
+{% block content %}
+<h2>Reportes de PQR</h2>
+
+<p><strong>Total de PQR:</strong> {{ total_quejas }}</p>
+
+<h4>Por estado</h4>
+<ul>
+  {% for e in por_estado %}
+    <li>{{ e.estado__nombre }}: {{ e.total }}</li>
+  {% empty %}
+    <li>No hay datos</li>
+  {% endfor %}
+</ul>
+
+<h4>Por técnico</h4>
+<ul>
+  {% for t in por_tecnico %}
+    <li>{{ t.tecnico__usuario__username|default:"Sin asignar" }}: {{ t.total }}</li>
+  {% empty %}
+    <li>No hay datos</li>
+  {% endfor %}
+</ul>
+{% endblock %}

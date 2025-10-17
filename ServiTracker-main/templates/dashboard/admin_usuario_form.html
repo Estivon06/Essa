@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}{{ accion }} Usuario{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white text-center">
+          <h4 class="mb-0">{{ accion }} Usuario</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Username -->
+            <div class="mb-3">
+              <label for="{{ form.username.id_for_label }}" class="form-label">
+                <i class="bi bi-person-fill"></i> Nombre de usuario
+              </label>
+              <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}"
+                     value="{{ form.username.value|default:'' }}" class="form-control">
+              {% if form.username.help_text %}
+                <div class="form-text">{{ form.username.help_text }}</div>
+              {% endif %}
+              {% for error in form.username.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="{{ form.email.id_for_label }}" class="form-label">
+                <i class="bi bi-envelope-fill"></i> Correo electrónico
+              </label>
+              <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
+                     value="{{ form.email.value|default:'' }}" class="form-control">
+              {% for error in form.email.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Rol -->
+            <div class="mb-3">
+              <label for="{{ form.rol.id_for_label }}" class="form-label">
+                <i class="bi bi-people-fill"></i> Rol
+              </label>
+              {{ form.rol }}
+              {% for error in form.rol.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Activo -->
+            <div class="form-check mb-3">
+              {{ form.is_active }}
+              <label for="{{ form.is_active.id_for_label }}" class="form-check-label">Activo</label>
+              {% for error in form.is_active.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label for="{{ form.password.id_for_label }}" class="form-label">
+                <i class="bi bi-lock-fill"></i> Contraseña
+              </label>
+              <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}"
+                     class="form-control">
+              {% if form.password.help_text %}
+                <div class="form-text">{{ form.password.help_text }}</div>
+              {% endif %}
+              {% for error in form.password.errors %}
+                <div class="text-danger small">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-between">
+              <a href="{% url 'admin_gestion_usuarios' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Cancelar
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> {{ accion }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

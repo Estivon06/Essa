@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}ServiTracker{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- CSS propio -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="navbar navbar-expand-lg navbar-dark px-3" style="background-color: var(--blue-dark);">
+    <a class="navbar-brand fw-bold" href="{% url 'index' %}">⚡ ServiTracker</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'nosotros' %}">Nosotros</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'servicios' %}">Servicios</a></li>
+        {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li class="nav-item">
+            <a href="#" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+              Salir
+            </a>
+            <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+              {% csrf_token %}
+            </form>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Ingresar</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </header>
+
+  <!-- Layout con sidebar -->
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <aside class="col-md-3 col-lg-2 d-none d-md-block text-light p-3" style="background-color: var(--blue-deep);">
+        {% block sidebar %}
+        <h5 class="text-warning">Menú rápido</h5>
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link text-light" href="#">Mi perfil</a></li>
+          <li class="nav-item"><a class="nav-link text-light" href="#">Mis PQR</a></li>
+          <li class="nav-item"><a class="nav-link text-light" href="#">Soporte</a></li>
+        </ul>
+        {% endblock %}
+      </aside>
+
+      <!-- Contenido principal -->
+      <main class="col-md-9 col-lg-10 p-4">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-white text-center py-3" style="background-color: var(--blue-dark);">
+    <small>ESSA · Plataforma PQR (prototipo)</small>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

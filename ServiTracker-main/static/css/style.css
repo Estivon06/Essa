@@ -1,0 +1,99 @@
+:root {
+  --blue-light: #8ecae6;
+  --blue-mid: #219ebc;
+  --blue-deep: #126782;
+  --blue-dark: #023047;
+  --yellow: #ffb703;
+  --orange-light: #fd9e02;
+  --orange-dark: #fb8500;
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--blue-light);
+  color: var(--blue-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+.navbar {
+  background-color: var(--blue-dark) !important;
+}
+
+.navbar-brand, .nav-link {
+  color: white !important;
+}
+
+.nav-link:hover {
+  color: var(--yellow) !important;
+}
+
+aside {
+  min-height: 100vh;
+  background-color: var(--blue-deep);
+}
+
+aside h5 {
+  color: var(--yellow);
+}
+
+footer {
+  background-color: var(--blue-dark);
+  color: white;
+}
+
+h1, h2, h3 {
+  color: var(--blue-dark);
+}
+
+.btn-primary {
+  background-color: var(--yellow);
+  border-color: var(--orange-dark);
+  color: var(--blue-dark);
+}
+
+.btn-primary:hover {
+  background-color: var(--orange-dark);
+  border-color: var(--orange-light);
+  color: white;
+}
+
+.table {
+  border: 1px solid var(--blue-dark);
+}
+
+.table thead {
+  font-weight: bold;
+}
+
+
+.service-img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;   /* se ajusta sin recortar */
+  background-color: white; /* relleno para que se vea uniforme */
+  border: 2px solid var(--yellow);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+
+
+
+.btn-yellow {
+  background-color: var(--yellow);
+  border-color: var(--orange-dark);
+  color: var(--blue-dark);
+  transition: all 0.2s ease;
+}
+
+.btn-yellow:hover {
+  background-color: var(--orange-dark);
+  border-color: var(--orange-dark);
+  color: white;
+}

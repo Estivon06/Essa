@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Saludo</title>
+</head>
+<body>
+    <h1>Formulario de saludo</h1>
+
+    <form method="get" action="{% url 'saludo' %}">
+        <label>Nombre:
+            <input type="text" name="nombre" required>
+        </label>
+        <br>
+        <label>Edad:
+            <input type="number" name="edad" min="0" required>
+        </label>
+        <br>
+        <button type="submit">Enviar</button>
+    </form>
+
+    {% if has_data %}
+        <hr>
+        <p>Hola, {{ nombre }}. Tienes {{ edad }} años.</p>
+    {% endif %}
+</body>
+</html>

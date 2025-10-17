@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Servicios · ServiTracker{% endblock %}
+{% block content %}
+  <h2 class="mb-4 text-center">Nuestros Servicios</h2>
+
+  <div class="row">
+    <div class="col-md-4 text-center">
+      <img src="{% static 'img/pqr.png' %}" alt="Radicación PQR" class="service-img mb-3 shadow">
+      <h5>Radicación PQR</h5>
+      <p>Registra peticiones, quejas y reclamos de manera sencilla.</p>
+    </div>
+    <div class="col-md-4 text-center">
+      <img src="{% static 'img/seguimiento.png' %}" alt="Seguimiento" class="service-img mb-3 shadow">
+      <h5>Seguimiento</h5>
+      <p>Consulta el estado y los tiempos de respuesta de tus solicitudes.</p>
+    </div>
+    <div class="col-md-4 text-center">
+      <img src="{% static 'img/notificaciones.png' %}" alt="Notificaciones" class="service-img mb-3 shadow">
+      <h5>Notificaciones</h5>
+      <p>Recibe alertas por correo sobre cambios en tus PQR.</p>
+    </div>
+  </div>
+{% endblock %}

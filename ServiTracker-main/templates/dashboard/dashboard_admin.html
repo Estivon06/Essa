@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Administrativo{% endblock %}
+{% block content %}
+<div class="container">
+  <h2 class="mb-4">Panel Administrativo</h2>
+
+  <div class="row">
+    <!-- Gestión de usuarios -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-4">
+        <div class="card-body text-center">
+          <i class="bi bi-people-fill display-4 text-primary"></i>
+          <h5 class="mt-3">Usuarios</h5>
+          <p class="text-muted">Crear y administrar ciudadanos, técnicos y administrativos.</p>
+          <a href="{% url 'admin_gestion_usuarios' %}" class="btn btn-primary btn-sm">Gestionar</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gestión de PQR -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-4">
+        <div class="card-body text-center">
+          <i class="bi bi-file-earmark-text-fill display-4 text-warning"></i>
+          <h5 class="mt-3">PQR</h5>
+          <p class="text-muted">Revisar, asignar técnicos y cambiar estados.</p>
+          <a href="{% url 'panel_empleados' %}" class="btn btn-warning btn-sm">Gestionar</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reportes -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-4">
+        <div class="card-body text-center">
+          <i class="bi bi-bar-chart-fill display-4 text-success"></i>
+          <h5 class="mt-3">Reportes</h5>
+          <p class="text-muted">Ver estadísticas de PQR y desempeño.</p>
+          <a href="{% url 'admin_reportes' %}" class="btn btn-success btn-sm">Ver reportes</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Tabla de PQR -->
+  <h3 class="mb-3">Gestión de PQR</h3>
+  <table class="table table-bordered">
+    <thead class="table-dark text-white">
+      <tr>
+        <th>ID</th>
+        <th>Ciudadano</th>
+        <th>Técnico</th>
+        <th>Tipo de Falla</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for q in quejas %}
+      <tr>
+        <td>{{ q.id }}</td>
+        <td>{{ q.ciudadano.usuario.username }}</td>
+        <td>{% if q.tecnico %}{{ q.tecnico.usuario.username }}{% else %}-{% endif %}</td>
+        <td>{{ q.tipo_falla.nombre }}</td>
+        <td>{{ q.estado.nombre }}</td>
+        <td>{{ q.fecha_reporte|date:"d/m/Y H:i" }}</td>
+        <td>
+          <a href="{% url 'cambiar_estado' q.id %}" class="btn btn-sm btn-warning">Cambiar estado</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">No hay PQR registradas.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
