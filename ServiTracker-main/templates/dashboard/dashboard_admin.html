@@ -24,7 +24,7 @@
           <i class="bi bi-file-earmark-text-fill display-4 text-warning"></i>
           <h5 class="mt-3">PQR</h5>
           <p class="text-muted">Revisar, asignar técnicos y cambiar estados.</p>
-          <a href="{% url 'panel_empleados' %}" class="btn btn-warning btn-sm">Gestionar</a>
+          <a href="{% url 'admin_panel_quejas' %}" class="btn btn-warning btn-sm">Gestionar</a>
         </div>
       </div>
     </div>
@@ -67,8 +67,11 @@
         <td>{{ q.tipo_falla.nombre }}</td>
         <td>{{ q.estado.nombre }}</td>
         <td>{{ q.fecha_reporte|date:"d/m/Y H:i" }}</td>
-        <td>
-          <a href="{% url 'cambiar_estado' q.id %}" class="btn btn-sm btn-warning">Cambiar estado</a>
+        <td class="d-flex gap-1">
+          <a href="{% url 'admin_asignar_tecnico' q.id %}" class="btn btn-sm btn-info" title="Asignar técnico">Asignar</a>
+          <a href="{% url 'admin_editar_queja' q.id %}" class="btn btn-sm btn-warning" title="Editar queja">Editar</a>
+          <a href="{% url 'cambiar_estado' q.id %}" class="btn btn-sm btn-secondary" title="Cambiar estado">Estado</a>
+          <a href="{% url 'admin_eliminar_queja' q.id %}" class="btn btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Eliminar esta queja? Esta acción no se puede deshacer.');">Eliminar</a>
         </td>
       </tr>
       {% empty %}

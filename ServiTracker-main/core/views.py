@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.db.models import Count
+from django import forms
 from .forms import QuejaForm, ComentarioForm, CambiarEstadoForm, UsuarioForm
 from .models import Queja, Ciudadano, ComentarioQueja
 
@@ -32,16 +33,15 @@ def dashboard(request):
         quejas = Queja.objects.filter(ciudadano__usuario=request.user).order_by('-fecha_reporte')
         return render(request, 'dashboard/dashboard_ciudadano.html', {'quejas': quejas})
 
-    elif request.user.rol == 'tecnico':
+    if request.user.rol == 'tecnico':
         quejas = Queja.objects.filter(tecnico__usuario=request.user).order_by('-fecha_reporte')
         return render(request, 'dashboard/dashboard_tecnico.html', {'quejas': quejas})
 
-    elif request.user.rol == 'administrativo' or request.user.is_superuser:
+    if request.user.rol == 'administrativo' or request.user.is_superuser:
         quejas = Queja.objects.all().order_by('-fecha_reporte')
         return render(request, 'dashboard/dashboard_admin.html', {'quejas': quejas})
 
-    else:
-        return redirect('index')
+    return redirect('index')
 
 
 # -------------------
@@ -66,7 +66,7 @@ def crear_queja(request):
 
 
 # -------------------
-# Panel de empleados (técnicos y administrativos)
+# Panel de empleados (técnicos y administrativos) - vista antigua
 # -------------------
 @login_required
 def panel_empleados(request):
@@ -81,11 +81,13 @@ def panel_empleados(request):
 
 
 # -------------------
-# Cambiar estado de una queja (solo administrativos)
+# Cambiar estado de una queja
 # -------------------
 @login_required
 def cambiar_estado(request, queja_id):
-    if request.user.rol != 'administrativo':
+    # Solo administrativos pueden cambiar estado desde panel administrativo,
+    # pero mantener acceso si la lógica de negocio lo requiere (ajustar según necesidad).
+    if request.user.rol != 'administrativo' and not request.user.is_superuser:
         return redirect('dashboard')
 
     queja = get_object_or_404(Queja, id=queja_id)
@@ -94,7 +96,7 @@ def cambiar_estado(request, queja_id):
         form = CambiarEstadoForm(request.POST, instance=queja)
         if form.is_valid():
             form.save()
-            return redirect('dashboard')
+            return redirect('admin_panel_quejas')
     else:
         form = CambiarEstadoForm(instance=queja)
 
@@ -108,7 +110,7 @@ def cambiar_estado(request, queja_id):
 def agregar_comentario(request, queja_id):
     queja = get_object_or_404(Queja, id=queja_id)
 
-    if request.user.rol not in ['tecnico', 'administrativo']:
+    if request.user.rol not in ['tecnico', 'administrativo'] and not request.user.is_superuser:
         return redirect('dashboard')
 
     if request.method == 'POST':
@@ -118,6 +120,9 @@ def agregar_comentario(request, queja_id):
             comentario.queja = queja
             comentario.autor = request.user.username
             comentario.save()
+            # Redirige al panel administrativo si quien comenta es administrativo, si no al dashboard
+            if request.user.rol == 'administrativo' or request.user.is_superuser:
+                return redirect('admin_panel_quejas')
             return redirect('dashboard')
     else:
         form = ComentarioForm()
@@ -183,6 +188,81 @@ def admin_eliminar_usuario(request, usuario_id):
         return redirect('admin_gestion_usuarios')
 
     return render(request, 'dashboard/admin_usuario_confirm_delete.html', {'usuario': usuario})
+
+
+# -------------------
+# Panel administrativo de PQR con acciones
+# -------------------
+# Formularios internos para edición y asignación
+class AsignarTecnicoForm(forms.ModelForm):
+    class Meta:
+        model = Queja
+        fields = ['tecnico']
+
+class EditarQuejaForm(forms.ModelForm):
+    class Meta:
+        model = Queja
+        fields = ['ubicacion', 'tipo_falla', 'descripcion', 'tecnico', 'estado']
+
+
+@login_required
+def admin_panel_quejas(request):
+    if request.user.rol != 'administrativo' and not request.user.is_superuser:
+        return redirect('dashboard')
+
+    quejas = Queja.objects.all().order_by('-fecha_reporte')
+    return render(request, 'dashboard/admin_panel_quejas.html', {'quejas': quejas})
+
+
+
+@login_required
+def admin_asignar_tecnico(request, queja_id):
+    if request.user.rol != 'administrativo' and not request.user.is_superuser:
+        return redirect('dashboard')
+
+    queja = get_object_or_404(Queja, id=queja_id)
+
+    if request.method == 'POST':
+        form = AsignarTecnicoForm(request.POST, instance=queja)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_panel_quejas')
+    else:
+        form = AsignarTecnicoForm(instance=queja)
+
+    return render(request, 'dashboard/admin_asignar_tecnico.html', {'form': form, 'queja': queja})
+
+
+@login_required
+def admin_editar_queja(request, queja_id):
+    if request.user.rol != 'administrativo' and not request.user.is_superuser:
+        return redirect('dashboard')
+
+    queja = get_object_or_404(Queja, id=queja_id)
+
+    if request.method == 'POST':
+        form = EditarQuejaForm(request.POST, instance=queja)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_panel_quejas')
+    else:
+        form = EditarQuejaForm(instance=queja)
+
+    return render(request, 'dashboard/admin_editar_queja.html', {'form': form, 'queja': queja})
+
+
+@login_required
+def admin_eliminar_queja(request, queja_id):
+    if request.user.rol != 'administrativo' and not request.user.is_superuser:
+        return redirect('dashboard')
+
+    queja = get_object_or_404(Queja, id=queja_id)
+
+    if request.method == 'POST':
+        queja.delete()
+        return redirect('admin_panel_quejas')
+
+    return render(request, 'dashboard/admin_confirm_delete_queja.html', {'queja': queja})
 
 
 # -------------------

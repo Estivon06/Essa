@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Panel Administrativo de PQR{% endblock %}
+{% block content %}
+<h2>Panel de gestión de PQR</h2>
+
+<div class="mb-3 d-flex justify-content-between align-items-center">
+  <div>
+    <a href="{% url 'admin_panel_quejas' %}" class="btn btn-outline-secondary btn-sm">Refrescar</a>
+  </div>
+  <div>
+    <!-- Mostrar botón para crear queja (si quieres que solo ciertos roles lo usen, puedes envolverlo en una comprobación) -->
+    <a href="{% url 'crear_queja' %}" class="btn btn-success btn-sm">+ Crear nueva queja</a>
+  </div>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Ciudadano</th>
+      <th>Tipo de falla</th>
+      <th>Estado</th>
+      <th>Fecha</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for q in quejas %}
+    <tr>
+      <td>{{ q.id }}</td>
+      <td>{{ q.ciudadano.usuario.username }}</td>
+      <td>{{ q.tipo_falla.nombre }}</td>
+      <td>{{ q.estado.nombre }}</td>
+      <td>{{ q.fecha_reporte|date:"d/m/Y H:i" }}</td>
+      <td class="d-flex gap-1">
+        <a href="{% url 'admin_asignar_tecnico' q.id %}" class="btn btn-sm btn-info">Asignar</a>
+        <a href="{% url 'admin_editar_queja' q.id %}" class="btn btn-sm btn-warning">Editar</a>
+        <a href="{% url 'cambiar_estado' q.id %}" class="btn btn-sm btn-secondary">Estado</a>
+        <a href="{% url 'admin_eliminar_queja' q.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta queja? Esta acción no se puede deshacer.');">Eliminar</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="6" class="text-center">
+        No hay PQR registradas.
+        <div class="mt-2">
+          <a href="{% url 'crear_queja' %}" class="btn btn-success btn-sm">+ Crear la primera queja</a>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
