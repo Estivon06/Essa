@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django import forms
-from .forms import QuejaForm, ComentarioForm, CambiarEstadoForm, UsuarioForm
+from .forms import QuejaForm, QuejaFormAdmin, ComentarioForm, CambiarEstadoForm, UsuarioForm
 from .models import Queja, Ciudadano, ComentarioQueja
 
 Usuario = get_user_model()
@@ -45,24 +45,37 @@ def dashboard(request):
 
 
 # -------------------
-# Crear PQR (solo ciudadanos)
+# Crear PQR (ciudadanos y administrativos)
 # -------------------
 @login_required
 def crear_queja(request):
-    if request.user.rol != 'ciudadano':
+    # permitir a ciudadanos y administrativos (y superuser)
+    if request.user.rol not in ['ciudadano', 'administrativo'] and not request.user.is_superuser:
         return redirect('dashboard')
 
+    # Si el usuario es administrativo o superuser usaremos el formulario admin
+    es_admin = request.user.rol == 'administrativo' or request.user.is_superuser
+
     if request.method == 'POST':
-        form = QuejaForm(request.POST)
+        if es_admin:
+            form = QuejaFormAdmin(request.POST)
+        else:
+            form = QuejaForm(request.POST)
+
         if form.is_valid():
             queja = form.save(commit=False)
-            queja.ciudadano = Ciudadano.objects.get(usuario=request.user)
-            queja.estado_id = 1  # Estado inicial (ej. "Pendiente")
+            # Si es ciudadano asignar automáticamente el ciudadano correspondiente
+            if not es_admin:
+                queja.ciudadano = Ciudadano.objects.get(usuario=request.user)
+            # Estado inicial
+            queja.estado_id = 1
             queja.save()
-            return redirect('dashboard')
+            # Redirección distinta según rol
+            return redirect('admin_panel_quejas' if es_admin else 'dashboard')
     else:
-        form = QuejaForm()
-    return render(request, 'pqr/crear_queja.html', {'form': form})
+        form = QuejaFormAdmin() if es_admin else QuejaForm()
+
+    return render(request, 'pqr/crear_queja.html', {'form': form, 'es_admin': es_admin})
 
 
 # -------------------
@@ -85,8 +98,6 @@ def panel_empleados(request):
 # -------------------
 @login_required
 def cambiar_estado(request, queja_id):
-    # Solo administrativos pueden cambiar estado desde panel administrativo,
-    # pero mantener acceso si la lógica de negocio lo requiere (ajustar según necesidad).
     if request.user.rol != 'administrativo' and not request.user.is_superuser:
         return redirect('dashboard')
 
@@ -120,7 +131,6 @@ def agregar_comentario(request, queja_id):
             comentario.queja = queja
             comentario.autor = request.user.username
             comentario.save()
-            # Redirige al panel administrativo si quien comenta es administrativo, si no al dashboard
             if request.user.rol == 'administrativo' or request.user.is_superuser:
                 return redirect('admin_panel_quejas')
             return redirect('dashboard')
@@ -193,7 +203,6 @@ def admin_eliminar_usuario(request, usuario_id):
 # -------------------
 # Panel administrativo de PQR con acciones
 # -------------------
-# Formularios internos para edición y asignación
 class AsignarTecnicoForm(forms.ModelForm):
     class Meta:
         model = Queja
@@ -212,7 +221,6 @@ def admin_panel_quejas(request):
 
     quejas = Queja.objects.all().order_by('-fecha_reporte')
     return render(request, 'dashboard/admin_panel_quejas.html', {'quejas': quejas})
-
 
 
 @login_required

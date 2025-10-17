@@ -1,9 +1,57 @@
 {% extends 'base.html' %}
+{% block title %}Nueva PQR{% endblock %}
 {% block content %}
-<h2>Nueva PQR</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-success">Enviar</button>
-</form>
+<div class="container mt-3">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h4 class="card-title">Nueva PQR</h4>
+
+      {% if es_admin %}
+        <p class="text-muted">Creando PQR en nombre de un ciudadano. Seleccione el ciudadano destinatario.</p>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          {{ form.ciudadano.label_tag }}{% if form.ciudadano %}
+            {{ form.ciudadano }}
+          {% endif %}
+          {% for err in form.ciudadano.errors %}
+            <div class="text-danger small">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          {{ form.ubicacion.label_tag }}
+          {{ form.ubicacion }}
+          {% for err in form.ubicacion.errors %}
+            <div class="text-danger small">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          {{ form.tipo_falla.label_tag }}
+          {{ form.tipo_falla }}
+          {% for err in form.tipo_falla.errors %}
+            <div class="text-danger small">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="mb-3">
+          {{ form.descripcion.label_tag }}
+          {{ form.descripcion }}
+          {% for err in form.descripcion.errors %}
+            <div class="text-danger small">{{ err }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success">Enviar</button>
+          <a href="{% url request.user.rol|yesno:'admin_panel_quejas,dashboard' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

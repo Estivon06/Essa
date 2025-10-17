@@ -2,28 +2,40 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 # -------------------
-# Usuario personalizado
+# Usuario personalizado (campos nuevos opcionales)
 # -------------------
 class Usuario(AbstractUser):
     class Rol(models.TextChoices):
         CIUDADANO = 'ciudadano', 'Ciudadano'
-        TECNICO = 'tecnico', 'Técnico'
+        TECNICO = 'tecnico', 'Técnnico'
         ADMINISTRATIVO = 'administrativo', 'Administrativo'
 
     telefono = models.CharField(max_length=20, blank=True, null=True)
     rol = models.CharField(max_length=20, choices=Rol.choices, default=Rol.CIUDADANO)
+
+    # Campos adicionales opcionales
+    numero_documento = models.CharField(max_length=50, blank=True, null=True)
+    fecha_nacimiento = models.DateField(blank=True, null=True)
+    numero_cuenta = models.CharField(max_length=100, blank=True, null=True)
+    banco = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"{self.username} ({self.rol})"
 
 
 # -------------------
-# Perfiles 1:1
+# Perfiles 1:1 (ampliados ligeramente)
 # -------------------
 class Ciudadano(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
-    direccion = models.CharField(max_length=255)
+    direccion = models.CharField(max_length=255, blank=True)
     telefono_alternativo = models.CharField(max_length=20, blank=True, null=True)
+
+    # Campos que querías conservar en el perfil (opcionales para no romper migraciones)
+    tipo_documento = models.CharField(max_length=30, blank=True, null=True)
+    numero_documento = models.CharField(max_length=50, blank=True, null=True)
+    numero_cuenta = models.CharField(max_length=100, blank=True, null=True)
+    banco = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"Ciudadano: {self.usuario.username}"
@@ -31,8 +43,8 @@ class Ciudadano(models.Model):
 
 class Tecnico(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
-    especialidad = models.CharField(max_length=100)
-    zona_asignada = models.CharField(max_length=100)
+    especialidad = models.CharField(max_length=100, blank=True)
+    zona_asignada = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return f"Técnico: {self.usuario.username}"
@@ -40,14 +52,14 @@ class Tecnico(models.Model):
 
 class Administrativo(models.Model):
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
-    departamento = models.CharField(max_length=100)
+    departamento = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return f"Administrativo: {self.usuario.username}"
 
 
 # -------------------
-# Tablas auxiliares
+# Tablas auxiliares (sin cambios funcionales)
 # -------------------
 class Ubicacion(models.Model):
     barrio = models.CharField(max_length=100)
@@ -60,7 +72,7 @@ class Ubicacion(models.Model):
 
 class TipoFalla(models.Model):
     nombre = models.CharField(max_length=100)
-    descripcion = models.TextField()
+    descripcion = models.TextField(blank=True)
 
     def __str__(self):
         return self.nombre
@@ -68,14 +80,14 @@ class TipoFalla(models.Model):
 
 class EstadoQueja(models.Model):
     nombre = models.CharField(max_length=50)
-    descripcion = models.TextField()
+    descripcion = models.TextField(blank=True)
 
     def __str__(self):
         return self.nombre
 
 
 # -------------------
-# Queja principal
+# Queja principal (sin cambios funcionales)
 # -------------------
 class Queja(models.Model):
     ciudadano = models.ForeignKey(Ciudadano, on_delete=models.CASCADE)
@@ -93,7 +105,7 @@ class Queja(models.Model):
 
 
 # -------------------
-# Comentarios de la queja
+# Comentarios de la queja (sin cambios)
 # -------------------
 class ComentarioQueja(models.Model):
     queja = models.ForeignKey(Queja, on_delete=models.CASCADE, related_name="comentarios")
